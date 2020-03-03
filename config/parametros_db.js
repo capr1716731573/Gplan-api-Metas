@@ -1,7 +1,7 @@
 module.exports = {
     user: 'postgres',
     host: 'localhost',
-    database: 'bdd_salud',
+    database: 'metas_database',
     password: '1716731573',
     port: 5433
 }

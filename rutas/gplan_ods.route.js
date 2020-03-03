@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var bcryptjs = require('bcryptjs');
 var rows = require('../config/config').ROWS_POR_PAG;
 var mdAuthenticationJWT = require('../middlewares/authentication');
 //variable de conexion a postgres
@@ -10,10 +9,29 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'paciente',
-    pk_tabla: 'pk_pac',
-    sp_crud_tabla: 'sp_salud_crud_paciente'
+    tabla_target: 'ods',
+    pk_tabla: 'pk_ods',
+    sp_crud_tabla: 'sp_gplan_crud_ods'
 }
+
+//Rutas
+// ==========================================
+// Obtener todos los registros TODOS x PADRE
+// ========================================== 
+app.get('/todos', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+    var desde = req.query.desde;
+    desde = Number(desde);
+    var fk_padre = req.query.fk_padre || 0;
+    fk_padre = Number(fk_padre);
+    var consulta;
+    //valido que exista el parametro "desde"
+    if (req.query.desde) {
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } ORDER BY numeral_ods LIMIT ${ rows } OFFSET ${ desde }`;
+    } else {
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } ORDER BY numeral_ods`;
+    }
+    crud.getAll(datos_tabla.tabla_target, consulta, res);
+});
 
 //Rutas
 // ==========================================
@@ -27,23 +45,10 @@ app.get('/', mdAuthenticationJWT.verificarToken, (req, res, next) => {
     var consulta;
     //valido que exista el parametro "desde"
     if (req.query.desde) {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } pac INNER JOIN persona p on pac.pk_person = p.pk_person ORDER BY p.apellidos_person ASC, p.nombres_person ASC LIMIT ${ rows } OFFSET ${ desde }`;
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE activo_ods=true ORDER BY numeral_ods LIMIT ${ rows } OFFSET ${ desde }`;
     } else {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } pac INNER JOIN persona p on pac.pk_person = p.pk_person ORDER BY p.apellidos_person ASC, p.nombres_person ASC`;
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE activo_ods=true ORDER BY numeral_ods`;
     }
-    crud.getAll(datos_tabla.tabla_target, consulta, res);
-});
-
-// ==========================================
-// Obtener todos los registros busqueda avanzada por parametros
-// ========================================== 
-app.get('/busqueda/:busqueda', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var busqueda = req.params.busqueda;
-    var consulta;
-    //valido que exista el parametro "desde"
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } pac INNER JOIN persona p on pac.pk_person = p.pk_person 
-    WHERE p.apellidos_person LIKE '%${busqueda}%' OR  p.nombres_person LIKE '%${busqueda}%' OR p.numidentificacion_person LIKE '%${busqueda}%'`;
-    //LLamo al archivo CRUD OPERACIONES
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 
@@ -52,11 +57,11 @@ app.get('/busqueda/:busqueda', mdAuthenticationJWT.verificarToken, (req, res, ne
 // ==========================================
 // Obtener registro por ID
 // ========================================== 
-app.get('/ID/:id', (req, res) => {
+app.get('/:id', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
     var id = req.params.id;
     //consulta si existen un registro del existente
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } pac INNER JOIN persona p on pac.pk_person = p.pk_person WHERE ${datos_tabla.pk_tabla}= ${ id }`;
+    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE ${datos_tabla.pk_tabla}= ${ id }`;
     //LLamo al archivo CRUD OPERACIONES
     crud.getID(datos_tabla.tabla_target, id, consulta, res);
 
@@ -69,21 +74,10 @@ app.post('/', mdAuthenticationJWT.verificarToken, (req, res) => {
 
     //Recibo los datos en el body y con el body parser me lo transforma a JSON
     var body = req.body;
-    //encripto password
-    if (body.opcion === 'I') {
-        body.json.password_user = bcryptjs.hashSync(body.json.password_user, 10);
-        console.log(JSON.stringify(body));
-    } else {
-        if (body.json.password_user != body.json.password2) {
-            body.json.password_user = bcryptjs.hashSync(body.json.password_user, 10);
-        }
-    }
-
     consulta = `SELECT * FROM ${datos_tabla.sp_crud_tabla} ($1,$2)`;
     crud.crudBasico(datos_tabla.tabla_target, consulta, body, res);
 
 });
-
 
 
 module.exports = app;

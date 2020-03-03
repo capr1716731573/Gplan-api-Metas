@@ -11,7 +11,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'geografia',
     pk_tabla: 'pk_ubigeo',
-    sp_crud_tabla: 'sp_salud_crud_ubicacion_geografica'
+    sp_crud_tabla: 'sp_crud_ubicacion_geografica'
 }
 
 var consulta_parroquia = "SELECT " +

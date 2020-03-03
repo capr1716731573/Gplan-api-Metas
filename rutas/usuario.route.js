@@ -12,7 +12,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'usuario',
     pk_tabla: 'pk_user',
-    sp_crud_tabla: 'sp_salud_crud_usuario'
+    sp_crud_tabla: 'sp_crud_usuario'
 }
 
 //Rutas
@@ -73,7 +73,7 @@ app.post('/', mdAuthenticationJWT.verificarToken, (req, res) => {
     //encripto password
     if (body.opcion === 'I') {
         body.json.password_user = bcryptjs.hashSync(body.json.password_user, 10);
-        console.log(JSON.stringify(body));
+
     } else {
         if (body.json.password_user != body.json.password2) {
             body.json.password_user = bcryptjs.hashSync(body.json.password_user, 10);

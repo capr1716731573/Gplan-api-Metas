@@ -9,42 +9,30 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'grupo_sanguineo',
-    pk_tabla: 'pk_grupsang',
-    sp_crud_tabla: 'sp_salud_crud_grupo_sanguineo'
+    tabla_target: 'metas',
+    pk_tabla: 'pk_meta',
+    sp_crud_tabla: 'sp_gplan_crud_metas'
 }
 
 //Rutas
 // ==========================================
 // Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+app.get('/:plan', mdAuthenticationJWT.verificarToken, (req, res, next) => {
     var desde = req.query.desde;
+    var plan = req.params.plan;
     desde = Number(desde);
     var fk_padre = req.query.fk_padre || 0;
     fk_padre = Number(fk_padre);
     var consulta;
     //valido que exista el parametro "desde"
     if (req.query.desde) {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } LIMIT ${ rows } OFFSET ${ desde }`;
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE fk_plan = ${plan} ORDER BY anio_meta ASC LIMIT ${ rows } OFFSET ${ desde }`;
     } else {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target }`;
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE fk_plan = ${plan} ORDER BY anio_meta ASC`;
     }
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
-
-// ==========================================
-// Obtener todos los registros busqueda avanzada por parametros
-// ========================================== 
-app.get('/busqueda', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var busqueda = req.query.busqueda;
-    var consulta;
-    //valido que exista el parametro "desde"
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE nombre_grupsang LIKE '%${busqueda}%'`;
-    //LLamo al archivo CRUD OPERACIONES
-    crud.getAll(datos_tabla.tabla_target, consulta, res);
-});
-
 
 
 // ==========================================
@@ -54,11 +42,40 @@ app.get('/:id', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
     var id = req.params.id;
     //consulta si existen un registro del existente
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE ${datos_tabla.pk_tabla}= ${ id }`;
+    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE ${datos_tabla.pk_tabla}= ${ id } ORDER BY anio_meta ASC`;
     //LLamo al archivo CRUD OPERACIONES
     crud.getID(datos_tabla.tabla_target, id, consulta, res);
 
 });
+
+
+// ==========================================
+// Obtener registro Linea Base
+// ========================================== 
+app.get('/linea_base/:plan', (req, res) => {
+    //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
+    var plan = req.params.plan;
+    //consulta si existen un registro del existente
+    consulta = `SELECT * FROM sp_getLineaBase(${ plan })`;
+    //LLamo al archivo CRUD OPERACIONES
+    crud.getID(datos_tabla.tabla_target, plan, consulta, res);
+
+});
+
+
+// ==========================================
+// Ejecutar creacion de metas
+// ========================================== 
+app.post('/crear_metas', mdAuthenticationJWT.verificarToken, (req, res) => {
+
+    //Recibo los datos en el body y con el body parser me lo transforma a JSON
+    var body = req.body;
+    consulta = `SELECT * FROM sp_gplan_crear_metas ('${body.json}'::json)`;
+    console.log(consulta);
+    crud.getValidar('Creacion de Metas', body, consulta, res);
+
+});
+
 
 // ==========================================
 // Ejecutar Crud acorde a parametro 

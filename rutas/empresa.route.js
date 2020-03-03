@@ -11,7 +11,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'empresa',
     pk_tabla: 'pk_empre',
-    sp_crud_tabla: 'sp_salud_crud_empresa'
+    sp_crud_tabla: 'sp_crud_empresa'
 }
 
 //Rutas

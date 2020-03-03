@@ -11,7 +11,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'etnia',
     pk_tabla: 'pk_etnia',
-    sp_crud_tabla: 'sp_salud_crud_etnia'
+    sp_crud_tabla: 'sp_crud_etnia'
 }
 
 //Rutas

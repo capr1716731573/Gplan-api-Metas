@@ -9,9 +9,9 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'tipo_seguro',
-    pk_tabla: 'pk_tipseg',
-    sp_crud_tabla: 'sp_salud_crud_tipo_seguro'
+    tabla_target: 'recorrido_meta',
+    pk_tabla: 'pk_recmeta',
+    sp_crud_tabla: ''
 }
 
 //Rutas
@@ -30,18 +30,6 @@ app.get('/', mdAuthenticationJWT.verificarToken, (req, res, next) => {
     } else {
         consulta = `SELECT * FROM ${ datos_tabla.tabla_target }`;
     }
-    crud.getAll(datos_tabla.tabla_target, consulta, res);
-});
-
-// ==========================================
-// Obtener todos los registros busqueda avanzada por parametros
-// ========================================== 
-app.get('/busqueda', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var busqueda = req.query.busqueda;
-    var consulta;
-    //valido que exista el parametro "desde"
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE nombre_tipseg LIKE '%${busqueda}%'`;
-    //LLamo al archivo CRUD OPERACIONES
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 

@@ -44,6 +44,46 @@ funcionesCrud.getAll = function(tabla_target, consulta, res) {
 }
 
 // ==========================================
+// Obtener varios registros JSON ANIDADO
+// ========================================== 
+funcionesCrud.getAll2 = function(tabla_target, consulta, res) {
+
+    total_registros = 0;
+    consulta_total_rows = `SELECT count(*) FROM ${tabla_target}`;
+    pool.query(consulta_total_rows, (err, response) => {
+        if (err) {
+            return res.status(500).json({
+                status: 'error',
+                message: `Error cargando cantidad ${ tabla_target }`,
+                errors: err
+            });
+        }
+
+        total_registros = Number(response.rows[0].count);
+
+        pool.query(consulta, (err, response) => {
+            if (err) {
+                return res.status(500).json({
+                    status: 'error',
+                    message: `Error cargando ${ tabla_target }`,
+                    errors: err
+                });
+            }
+
+
+            res.status(200).json({
+                status: 'ok',
+                data: response.rows, // < ----- si no da error retorno el usuarios de la linea #17
+                total_registros: total_registros
+            });
+
+        })
+    })
+
+}
+
+
+// ==========================================
 // Obtener un solo registro
 // ========================================== 
 funcionesCrud.getID = function(tabla_target, id, consulta, res) {

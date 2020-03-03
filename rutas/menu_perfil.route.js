@@ -11,7 +11,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'menu_perfil',
     pk_tabla: 'pk_menuperfil',
-    sp_crud_tabla: 'sp_salud_crud_menu_perfil'
+    sp_crud_tabla: 'sp_crud_menu_perfil'
 }
 
 //Rutas
@@ -23,7 +23,7 @@ app.get('/:id_perfil', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
     var id = req.params.id_perfil;
     //consulta si existen un registro del existente
-    consulta = `SELECT * FROM sp_salud_getmenubyperfil(${ id })`;
+    consulta = `SELECT * FROM sp_getmenubyperfil(${ id })`;
     //LLamo al archivo CRUD OPERACIONES
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 
@@ -38,7 +38,7 @@ app.get('/byUser/:id_user', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
     var id = req.params.id_user;
     //consulta si existen un registro del existente
-    consulta = `SELECT * FROM sp_salud_getmenubyuser(${ id })`;
+    consulta = `SELECT * FROM sp_getmenubyuser(${ id })`;
     //LLamo al archivo CRUD OPERACIONES
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 

@@ -9,45 +9,60 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'examen',
-    pk_tabla: 'pk_exa',
-    sp_crud_tabla: 'sp_salud_crud_tipo_examen'
+    tabla_target: 'competencias_gad',
+    pk_tabla: 'pk_compgad',
+    sp_crud_tabla: 'sp_gplan_crud_competencias'
 }
 
 //Rutas
 // ==========================================
 // Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/:pk_auxdiag', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var pk_auxdiag = req.params.pk_auxdiag;
+app.get('/:tipogad', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+    var desde = req.query.desde;
+    var tipogad = req.params.tipogad;
+    desde = Number(desde);
+    var fk_padre = req.query.fk_padre || 0;
+    fk_padre = Number(fk_padre);
     var consulta;
-    consulta = "SELECT * from examen e INNER JOIN auxiliar_diagnostico a on e.pk_auxdiag = a.pk_auxdiag  where a.pk_auxdiag=" + pk_auxdiag + "  order by e.nombre_exa";
+    //valido que exista el parametro "desde"
+    if (req.query.desde) {
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE fk_tipgad = ${tipogad} ORDER BY ${datos_tabla.pk_tabla} LIMIT ${ rows } OFFSET ${ desde }`;
+    } else {
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE fk_tipgad = ${tipogad} ORDER BY ${datos_tabla.pk_tabla}`;
+    }
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 
-
+//Rutas
 // ==========================================
-// Obtener todos los registros ACTIVOS
+// Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/activos/:pk_auxdiag', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var pk_auxdiag = req.params.pk_auxdiag;
+app.get('/activos/:tipogad', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+    var desde = req.query.desde;
+    var tipogad = req.params.tipogad;
+    desde = Number(desde);
+    var fk_padre = req.query.fk_padre || 0;
+    fk_padre = Number(fk_padre);
     var consulta;
-    consulta = "SELECT * from examen e INNER JOIN auxiliar_diagnostico a on e.pk_auxdiag = a.pk_auxdiag  where a.pk_auxdiag=" + pk_auxdiag + " and e.activo_exa=true order by e.nombre_exa";
+    //valido que exista el parametro "desde"
+    if (req.query.desde) {
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE fk_tipgad = ${tipogad} AND activo_compgad=true ORDER BY ${datos_tabla.pk_tabla} LIMIT ${ rows } OFFSET ${ desde }`;
+    } else {
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE fk_tipgad = ${tipogad} AND activo_compgad=true ORDER BY ${datos_tabla.pk_tabla}`;
+    }
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
-
 
 
 // ==========================================
 // Obtener registro por ID
 // ========================================== 
-app.get('/:pk_exa/:pk_auxdiag', (req, res) => {
+app.get('/:id', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
-    var pk_exa = req.params.pk_exa;
-    var pk_auxdiag = req.params.pk_auxdiag;
+    var id = req.params.id;
     //consulta si existen un registro del existente
-    consulta = "SELECT * from examen e INNER JOIN auxiliar_diagnostico a on e.pk_auxdiag = a.pk_auxdiag " +
-        "where a.pk_auxdiag=" + pk_auxdiag + " e.pk_exa=" + pk_exa + "  order by e.nombre_exa";
+    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE ${datos_tabla.pk_tabla}= ${ id }`;
     //LLamo al archivo CRUD OPERACIONES
     crud.getID(datos_tabla.tabla_target, id, consulta, res);
 

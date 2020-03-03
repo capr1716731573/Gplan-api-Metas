@@ -47,8 +47,7 @@ app.post('/', (req, res) => {
                 mensaje: 'Credenciales incorrectas - email',
                 errors: err
             });
-        }
-        console.log(response);
+        };
         //Si hay valores escojo el primero, ya que si busco uno es xq debe serv unico
         var usuarioDB = response.rows[0];
 
@@ -63,7 +62,6 @@ app.post('/', (req, res) => {
             });
         }
 
-        console.log('Son iguales');
 
         //creo el token
         //1.-Instalamos jsonwebtoken --->  npm install jsonwebtoken --save

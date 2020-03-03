@@ -11,7 +11,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'especialidad',
     pk_tabla: 'pk_espec',
-    sp_crud_tabla: 'sp_salud_crud_especialidad'
+    sp_crud_tabla: 'sp_crud_especialidad'
 }
 
 //Rutas

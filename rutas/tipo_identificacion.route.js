@@ -11,7 +11,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'tipo_identificacion',
     pk_tabla: 'pk_tipiden',
-    sp_crud_tabla: 'sp_salud_crud_tipo_identificacion'
+    sp_crud_tabla: 'sp_crud_tipo_identificacion'
 }
 
 //Rutas

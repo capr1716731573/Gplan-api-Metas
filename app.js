@@ -4,35 +4,34 @@ var bodyParser = require('body-parser');
 var tipo_identificacion_route = require('./rutas/tipo_identificacion.route');
 var geografia_route = require('./rutas/geografia.route');
 var profesion_route = require('./rutas/profesion.route');
-var agenda_route = require('./rutas/agenda.route');
 var nivel_educacion_route = require('./rutas/nivel_educacion.route');
-var auxiliar_diagnostico_route = require('./rutas/auxiliar_diagnostico.route');
-var exameneslab_route = require('./rutas/examenlab.route');
-var captacion_vacunas_route = require('./rutas/captacion_vacunas.route');
-var tipo_vacuna_route = require('./rutas/tipo_vacuna.route');
-var grupo_antecedentes_route = require('./rutas/grupo_antecedentes.route');
-var tipo_antecedentes_route = require('./rutas/tipo_antecedentes.route');
-var grupo_sanguineo_route = require('./rutas/grupo_sanguineo.route');
-var etnia_route = require('./rutas/etnia.route');
 var usuario_route = require('./rutas/usuario.route');
-var paciente_route = require('./rutas/paciente.route');
-var consulta_route = require('./rutas/consulta.route');
 var persona_route = require('./rutas/persona.route');
 var items_menu_route = require('./rutas/items_menu.route');
 var menu_perfil_route = require('./rutas/menu_perfil.route');
-var tipo_seguro_route = require('./rutas/tipo_seguro.route');
 var tipo_discapacidad_route = require('./rutas/tipo_discapacidad.route');
 var empresa_route = require('./rutas/empresa.route');
 var empresa_user_route = require('./rutas/empresa_user.route');
-var cie10_route = require('./rutas/cie10.route');
 var perfil_route = require('./rutas/perfil.route');
 var perfil_usuario_route = require('./rutas/perfil_usuario.route');
 var especialidad_route = require('./rutas/especialidad.route');
 var especialidad_user_route = require('./rutas/especialidad_user.route');
-var tipo_organos_sistemas_route = require('./rutas/tipo_organos_sistemas.route');
-var tipo_examen_route = require('./rutas/tipo_examen.route');
-var region_tipo_examen_route = require('./rutas/regiones_tipexamen.route');
 var login_route = require('./rutas/login.route');
+
+var gplan_competencia_route = require('./rutas/gplan_competencia.route');
+var gplan_eje_route = require('./rutas/gplan_eje.route');
+var gplan_gad_route = require('./rutas/gplan_gad.route');
+var gplan_meta_route = require('./rutas/gplan_meta.route');
+var gplan_objetivo_estrategico_route = require('./rutas/gplan_objetivo_estrategico.route');
+var gplan_objetivo_route = require('./rutas/gplan_objetivo.route');
+var gplan_ods_route = require('./rutas/gplan_ods.route');
+var gplan_plan_route = require('./rutas/gplan_plan.route');
+var gplan_tipo_gad_route = require('./rutas/gplan_tipo_gad.route');
+var gplan_periodogestion_route = require('./rutas/gplan_periodogestion.route');
+var gplan_recorrido_route = require('./rutas/gplan_recorridometa.route');
+var gplan_pntvs_route = require('./rutas/gplan_pntv_ods.route');
+var gplan_componentes_route = require('./rutas/gplan_componente.route');
+
 
 //Inicializar variables 
 var app = express();
@@ -53,35 +52,35 @@ app.use(bodyParser.json());
 app.use('/tipo_identificacion', tipo_identificacion_route);
 app.use('/geografia', geografia_route);
 app.use('/profesion', profesion_route);
-app.use('/agenda', agenda_route);
 app.use('/nivel_educacion', nivel_educacion_route);
-app.use('/auxiliar_diagnostico', auxiliar_diagnostico_route);
-app.use('/examenes_lab', exameneslab_route);
-app.use('/captacion_vacunas', captacion_vacunas_route);
-app.use('/tipo_vacuna', tipo_vacuna_route);
-app.use('/grupo_antecedentes', grupo_antecedentes_route);
-app.use('/tipo_antecedentes', tipo_antecedentes_route);
-app.use('/grupo_sanguineo', grupo_sanguineo_route);
-app.use('/etnia', etnia_route);
 app.use('/usuarios', usuario_route);
-app.use('/paciente', paciente_route);
-app.use('/consulta', consulta_route);
 app.use('/persona', persona_route);
 app.use('/menu', items_menu_route);
 app.use('/menu_perfil', menu_perfil_route);
-app.use('/tipo_seguro', tipo_seguro_route);
 app.use('/tipo_discapacidad', tipo_discapacidad_route);
 app.use('/empresa', empresa_route);
 app.use('/empresa_user', empresa_user_route);
-app.use('/cie10', cie10_route);
 app.use('/perfil', perfil_route);
 app.use('/perfil_usuario', perfil_usuario_route);
 app.use('/especialidad', especialidad_route);
 app.use('/especialidad_user', especialidad_user_route);
-app.use('/tipo_organos_sistemas', tipo_organos_sistemas_route);
-app.use('/tipo_examen', tipo_examen_route);
-app.use('/region_tipo_examen', region_tipo_examen_route);
 app.use('/login', login_route);
+
+app.use('/competencia', gplan_competencia_route);
+app.use('/eje', gplan_eje_route);
+app.use('/gad', gplan_gad_route);
+app.use('/meta', gplan_meta_route);
+app.use('/objetivo_estrategico', gplan_objetivo_estrategico_route);
+app.use('/objetivo', gplan_objetivo_route);
+app.use('/ods', gplan_ods_route);
+app.use('/plan', gplan_plan_route);
+app.use('/tipo', gplan_tipo_gad_route);
+app.use('/periodo', gplan_periodogestion_route);
+app.use('/recorrido', gplan_recorrido_route);
+app.use('/pntv', gplan_pntvs_route);
+app.use('/componente', gplan_componentes_route);
+
+
 
 //Configuracion 2 ->Escuchar peticiones
 app.listen(3000, () => {

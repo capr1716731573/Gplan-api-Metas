@@ -11,7 +11,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'nivel_educacion',
     pk_tabla: 'pk_nivedu',
-    sp_crud_tabla: 'sp_salud_crud_nivel_educacion'
+    sp_crud_tabla: 'sp_crud_nivel_educacion'
 }
 
 //Rutas

@@ -9,30 +9,27 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'regiones',
-    pk_tabla: 'pk_regexa',
-    sp_crud_tabla: 'sp_salud_crud_regiones_tipexa'
+    tabla_target: 'tipogad',
+    pk_tabla: 'pk_tipgad',
+    sp_crud_tabla: 'sp_gplan_crud_tipogad'
 }
 
 //Rutas
 // ==========================================
 // Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/:pk_tipexa', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var pk_tipexa = req.params.pk_tipexa;
+app.get('/', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+    var desde = req.query.desde;
+    desde = Number(desde);
+    var fk_padre = req.query.fk_padre || 0;
+    fk_padre = Number(fk_padre);
     var consulta;
-    consulta = "select * from regiones r INNER JOIN tipo_examen t on r.pk_tipexa = t.pk_tipexa  where r.pk_tipexa=" + pk_tipexa + "  order by r.nombre_regexa";
-    crud.getAll(datos_tabla.tabla_target, consulta, res);
-});
-
-
-// ==========================================
-// Obtener todos los registros ACTIVOS
-// ========================================== 
-app.get('/activos/:pk_tipexa', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var pk_tipexa = req.params.pk_tipexa;
-    var consulta;
-    consulta = "select * from regiones r INNER JOIN tipo_examen t on r.pk_tipexa = t.pk_tipexa  where r.pk_tipexa=" + pk_tipexa + " AND r.activo_regexa=TRUE order by r.nombre_regexa";
+    //valido que exista el parametro "desde"
+    if (req.query.desde) {
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } ORDER BY nombre_tipgad ASC LIMIT ${ rows } OFFSET ${ desde }`;
+    } else {
+        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } ORDER BY nombre_tipgad ASC `;
+    }
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 
@@ -40,13 +37,11 @@ app.get('/activos/:pk_tipexa', mdAuthenticationJWT.verificarToken, (req, res, ne
 // ==========================================
 // Obtener registro por ID
 // ========================================== 
-app.get('/:pk_regexa/:pk_tipexa', (req, res) => {
+app.get('/:id', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
-    var pk_regexa = req.params.pk_regexa;
-    var pk_tipexa = req.params.pk_tipexa;
+    var id = req.params.id;
     //consulta si existen un registro del existente
-    consulta = "select * from regiones r INNER JOIN tipo_examen t on r.pk_tipexa = t.pk_tipexa " +
-        "WHERE r.pk_tipexa=" + pk_regexa + " r.pk_regexa=" + pk_tipexa + "  order by r.nombre_regexa";
+    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE ${datos_tabla.pk_tabla}= ${ id }`;
     //LLamo al archivo CRUD OPERACIONES
     crud.getID(datos_tabla.tabla_target, id, consulta, res);
 

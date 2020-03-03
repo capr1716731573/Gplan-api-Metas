@@ -11,7 +11,7 @@ var crud = require('../funciones/crud_operaciones');
 var datos_tabla = {
     tabla_target: 'persona',
     pk_tabla: 'pk_person',
-    sp_crud_tabla: 'sp_salud_crud_persona'
+    sp_crud_tabla: 'sp_crud_persona'
 }
 
 //Rutas
@@ -54,10 +54,10 @@ app.get('/documento/:tipo_doc/:valor', (req, res) => {
     var valor = req.params.valor;
 
     if (tipo_doc === 'cedula') {
-        consulta = `SELECT * FROM sp_salud_verificar_cedula('${ valor }')`;
+        consulta = `SELECT * FROM sp_verificar_cedula('${ valor }')`;
     }
     //LLamo al archivo CRUD OPERACIONES
-    crud.getValidar('sp_salud_verificar_cedula', valor, consulta, res);
+    crud.getValidar('sp_verificar_cedula', valor, consulta, res);
 });
 
 

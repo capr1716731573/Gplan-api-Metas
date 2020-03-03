@@ -9,39 +9,69 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'captacion_vacunas',
-    pk_tabla: 'pk_tipcap',
-    sp_crud_tabla: 'sp_salud_crud_captacion_vacunas'
+    tabla_target: 'pntv_ods',
+    pk_tabla: 'pk_pntvods',
+    sp_crud_tabla: 'sp_gplan_crud_pntv_ods'
 }
+
+var consulta_main = 'SELECT ' +
+    'po.pk_pntvods, ' +
+    'po.fk_obj, ' +
+    'po.fk_ods, ' +
+    'po.activo_pntvods, ' +
+    'po.audit_creacion, ' +
+    'po.audit_modificacion, ' +
+    'o2.nombre_ods, ' +
+    'o2.numeral_ods, ' +
+    'o2.logo_ods, ' +
+    'eje.pk_eje, ' +
+    'eje.nombre_eje, ' +
+    'eje.numeral_eje, ' +
+    'o.nombre_obj, ' +
+    'o.numeral_obj ' +
+    'FROM pntv_ods po ' +
+    'INNER JOIN objetivo_pntv o ' +
+    '  INNER JOIN eje_pntv eje on o.fk_eje = eje.pk_eje ' +
+    'on po.fk_obj = o.pk_obj ' +
+    'INNER JOIN ods o2 on po.fk_ods = o2.pk_ods ';
 
 //Rutas
 // ==========================================
 // Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var desde = req.query.desde;
-    desde = Number(desde);
-    var fk_padre = req.query.fk_padre || 0;
-    fk_padre = Number(fk_padre);
+app.get('/:eje/:ods', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+    var eje = req.params.eje;
+    var ods = req.params.ods;
     var consulta;
-    //valido que exista el parametro "desde"
-    if (req.query.desde) {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } LIMIT ${ rows } OFFSET ${ desde }`;
-    } else {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target }`;
-    }
+
+    consulta = `${ consulta_main } WHERE fk_ods = ${ods} AND pk_eje=${eje} ORDER BY numeral_obj ASC`;
+
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 
+//Rutas
 // ==========================================
-// Obtener todos los registros busqueda avanzada por parametros
+// Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/busqueda', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var busqueda = req.query.busqueda;
-    var consulta;
-    //valido que exista el parametro "desde"
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE nombre_tipcap LIKE '%${busqueda}%'`;
-    //LLamo al archivo CRUD OPERACIONES
+app.get('/config/:eje/:ods', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+    var eje = req.params.eje;
+    var ods = req.params.ods;
+    var consulta = ` SELECT` +
+        `  pk_obj,` +
+        `  nombre_obj,` +
+        `  activo_obj,` +
+        `  numeral_obj,` +
+        `  (select COALESCE(pk_pntvods) FROM pntv_ods p WHERE p.fk_ods=${ods} AND p.fk_obj=pk_obj) id,` +
+        `  (CASE WHEN` +
+        `      ((select count(*) FROM pntv_ods p WHERE p.fk_ods=${ods} AND p.fk_obj=pk_obj) > 0) THEN` +
+        `      true` +
+        `      ELSE` +
+        `      false` +
+        `  END) as registro` +
+        `  ` +
+        `  from objetivo_pntv where fk_eje=${eje}` +
+        `  ORDER BY numeral_obj ASC`;
+
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 

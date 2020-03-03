@@ -9,29 +9,46 @@ const pool = require('../config/db');
 var crud = require('../funciones/crud_operaciones');
 //DATOS DE LA TABLA
 var datos_tabla = {
-    tabla_target: 'tipo_antecedentes',
-    pk_tabla: 'pk_tipant',
-    sp_crud_tabla: 'sp_salud_crud_tipo_actecedentes'
+    tabla_target: 'componentes',
+    pk_tabla: 'pk_compo',
+    sp_crud_tabla: 'sp_gplan_crud_componentes'
 }
 
 //Rutas
 // ==========================================
 // Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/:pk_grupant', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var pk_grupant = req.params.pk_grupant;
+app.get('/', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+    var desde = req.query.desde;
+    desde = Number(desde);
+    var fk_padre = req.query.fk_padre || 0;
+    fk_padre = Number(fk_padre);
     var consulta;
-    consulta = "select * from tipo_antecedentes ta INNER JOIN grupo_antecedentes a on ta.pk_grupant = a.pk_grupant where ta.pk_grupant=" + pk_grupant + "  order by ta.nombre_tipant";
+    //valido que exista el parametro "desde"
+    if (req.query.desde) {
+        consulta = `select * FROM componentes ORDER BY pk_compo LIMIT ${ rows } OFFSET ${ desde }`;
+    } else {
+        consulta = `select * FROM componentes ORDER BY pk_compo`;
+    }
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 
+//Rutas
 // ==========================================
-// Obtener todos los registros ACTIVOS
+// Obtener todos los registros TODOS x PADRE
 // ========================================== 
-app.get('/activos/:pk_grupant', mdAuthenticationJWT.verificarToken, (req, res, next) => {
-    var pk_grupant = req.params.pk_grupant;
+app.get('/activos', mdAuthenticationJWT.verificarToken, (req, res, next) => {
+    var desde = req.query.desde;
+    desde = Number(desde);
+    var fk_padre = req.query.fk_padre || 0;
+    fk_padre = Number(fk_padre);
     var consulta;
-    consulta = "select * from tipo_antecedentes ta INNER JOIN grupo_antecedentes a on ta.pk_grupant = a.pk_grupant where ta.pk_grupant=" + pk_grupant + " AND ta.activo_tipant=true  order by ta.nombre_tipant";
+    //valido que exista el parametro "desde"
+    if (req.query.desde) {
+        consulta = `select * FROM componentes WHERE activo_compo=true ORDER BY pk_compo LIMIT ${ rows } OFFSET ${ desde }`;
+    } else {
+        consulta = `select * FROM componentes WHERE activo_compo=true ORDER BY pk_compo`;
+    }
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
 
@@ -40,13 +57,11 @@ app.get('/activos/:pk_grupant', mdAuthenticationJWT.verificarToken, (req, res, n
 // ==========================================
 // Obtener registro por ID
 // ========================================== 
-app.get('/:pk_tipant/:pk_grupant', (req, res) => {
+app.get('/:id', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
-    var pk_tipant = req.params.pk_tipant;
-    var pk_grupant = req.params.pk_grupant;
+    var id = req.params.id;
     //consulta si existen un registro del existente
-    consulta = "select * from tipo_antecedentes ta INNER JOIN grupo_antecedentes a on ta.pk_grupant = a.pk_grupant " +
-        "where ta.pk_tipant=" + pk_tipant + " ta.pk_grupant=" + pk_grupant + "  order by ta.nombre_tipant";
+    consulta = `select * FROM componentes WHERE ${datos_tabla.pk_tabla}= ${ id }`;
     //LLamo al archivo CRUD OPERACIONES
     crud.getID(datos_tabla.tabla_target, id, consulta, res);
 
