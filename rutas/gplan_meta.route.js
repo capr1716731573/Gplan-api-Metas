@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
+var os = require("os");
 var rows = require('../config/config').ROWS_POR_PAG;
+var ruta_archivos = require('../config/config').RUTA_ARCHIVOS;
 var mdAuthenticationJWT = require('../middlewares/authentication');
 //variable de conexion a postgres
 const pool = require('../config/db');
@@ -13,6 +15,20 @@ var datos_tabla = {
     pk_tabla: 'pk_meta',
     sp_crud_tabla: 'sp_gplan_crud_metas'
 }
+
+var cabeceraMetas = 'pk_meta,' +
+    ' fk_plan, ' +
+    ' ejecutado_meta, ' +
+    ' planificado_meta, ' +
+    ' audit_creacion, ' +
+    ' audit_modificacion, ' +
+    ' anio_meta, ' +
+    ' porcentaje_cumplimiento_meta, ' +
+    ' temporalidad_evaluacion_meta, ' +
+    ' planificado_presup_meta, ' +
+    ' ejecutado_presup_meta, ' +
+    ' observacion_meta, ' +
+    ` ('${ruta_archivos}'|| urldoc_meta) as urldoc_meta`;
 
 //Rutas
 // ==========================================
@@ -27,9 +43,9 @@ app.get('/:plan', mdAuthenticationJWT.verificarToken, (req, res, next) => {
     var consulta;
     //valido que exista el parametro "desde"
     if (req.query.desde) {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE fk_plan = ${plan} ORDER BY anio_meta ASC LIMIT ${ rows } OFFSET ${ desde }`;
+        consulta = `SELECT ${cabeceraMetas} FROM ${ datos_tabla.tabla_target } WHERE fk_plan = ${plan} ORDER BY anio_meta ASC LIMIT ${ rows } OFFSET ${ desde }`;
     } else {
-        consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE fk_plan = ${plan} ORDER BY anio_meta ASC`;
+        consulta = `SELECT ${cabeceraMetas} FROM ${ datos_tabla.tabla_target } WHERE fk_plan = ${plan} ORDER BY anio_meta ASC`;
     }
     crud.getAll(datos_tabla.tabla_target, consulta, res);
 });
@@ -38,11 +54,11 @@ app.get('/:plan', mdAuthenticationJWT.verificarToken, (req, res, next) => {
 // ==========================================
 // Obtener registro por ID
 // ========================================== 
-app.get('/:id', (req, res) => {
+app.get('/ID/:id', (req, res) => {
     //con req.params.PARAMETRO .. recibe el parametro que envio en la peticion PUT con el campo id (/:id) que es igual al nombre del modelo
     var id = req.params.id;
     //consulta si existen un registro del existente
-    consulta = `SELECT * FROM ${ datos_tabla.tabla_target } WHERE ${datos_tabla.pk_tabla}= ${ id } ORDER BY anio_meta ASC`;
+    consulta = `SELECT ${cabeceraMetas},(sp_get_calculos_totales_meta(${ id })::json) as calculos_totales FROM ${ datos_tabla.tabla_target } WHERE pk_meta= ${ id }`;
     //LLamo al archivo CRUD OPERACIONES
     crud.getID(datos_tabla.tabla_target, id, consulta, res);
 

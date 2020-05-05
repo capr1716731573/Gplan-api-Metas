@@ -22,6 +22,7 @@ var gplan_competencia_route = require('./rutas/gplan_competencia.route');
 var gplan_eje_route = require('./rutas/gplan_eje.route');
 var gplan_gad_route = require('./rutas/gplan_gad.route');
 var gplan_meta_route = require('./rutas/gplan_meta.route');
+var gplan_submeta_route = require('./rutas/gplan_submeta.route');
 var gplan_objetivo_estrategico_route = require('./rutas/gplan_objetivo_estrategico.route');
 var gplan_objetivo_route = require('./rutas/gplan_objetivo.route');
 var gplan_ods_route = require('./rutas/gplan_ods.route');
@@ -31,6 +32,7 @@ var gplan_periodogestion_route = require('./rutas/gplan_periodogestion.route');
 var gplan_recorrido_route = require('./rutas/gplan_recorridometa.route');
 var gplan_pntvs_route = require('./rutas/gplan_pntv_ods.route');
 var gplan_componentes_route = require('./rutas/gplan_componente.route');
+var upload_route = require('./rutas/upload.route');
 
 
 //Inicializar variables 
@@ -70,6 +72,7 @@ app.use('/competencia', gplan_competencia_route);
 app.use('/eje', gplan_eje_route);
 app.use('/gad', gplan_gad_route);
 app.use('/meta', gplan_meta_route);
+app.use('/submeta', gplan_submeta_route);
 app.use('/objetivo_estrategico', gplan_objetivo_estrategico_route);
 app.use('/objetivo', gplan_objetivo_route);
 app.use('/ods', gplan_ods_route);
@@ -79,6 +82,7 @@ app.use('/periodo', gplan_periodogestion_route);
 app.use('/recorrido', gplan_recorrido_route);
 app.use('/pntv', gplan_pntvs_route);
 app.use('/componente', gplan_componentes_route);
+app.use('/cargar_archivo', upload_route);
 
 
 
